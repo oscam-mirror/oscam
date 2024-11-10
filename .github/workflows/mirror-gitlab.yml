@@ -1,0 +1,34 @@
+name: mirror gitlab
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: invoke-mirror-gitlab
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+
+    - name: repo-sync
+      uses: repo-sync/github-sync@v2
+      with:
+        source_repo: "https://git.streamboard.tv/common/oscam.git"
+        source_branch: "master"
+        destination_branch: "master"
+        sync_tags: "true"
+        github_token: ${{ secrets.ACTIONS_TOKEN }}
+
+    - name: trigger invoke-sync-gitlab api
+      run: |
+        curl --silent \
+             --request POST \
+             --header "Accept: application/vnd.github.everest-preview+json" \
+             --header "Authorization: Bearer ${{ secrets.ACTIONS_TOKEN }}" \
+             --data '{"event_type": "invoke-sync-gitlab"}' \
+             --url "https://api.github.com/repos/oscam-mirror/oscam-emu/dispatches"
