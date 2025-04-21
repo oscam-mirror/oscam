@@ -33,8 +33,8 @@ jobs:
              --data '{"event_type": "invoke-sync-gitlab"}' \
              --url "https://api.github.com/repos/oscam-mirror/oscam-emu/dispatches"
 
-  reuse:
-    uses: ./.github/workflows/code-analysis.yml
-    secrets: inherit
-    needs:
-      - mirror
+#  reuse:
+#    uses: ./.github/workflows/code-analysis.yml
+#    secrets: inherit
+#    needs:
+#      - mirror
