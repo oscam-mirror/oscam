@@ -2623,7 +2623,7 @@ void dvbapi_stop_descrambling(int32_t demux_id, uint32_t msgid)
 			// and rewrite the file themselves, so only remove it when none is left.
 			for(i = 0; i < MAX_DEMUX; i++)
 			{
-				if(demux[i].program_number != 0)
+				if(demux[i].program_number != 0 && demux[i].pidindex >= 0)
 				{
 					others_active = true;
 					break;
