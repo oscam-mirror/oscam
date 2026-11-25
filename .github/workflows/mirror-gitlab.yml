@@ -18,7 +18,7 @@ jobs:
     - name: repo-sync
       uses: repo-sync/github-sync@v2
       with:
-        source_repo: "https://git.streamboard.tv/common/oscam.git"
+        source_repo: "https://git.streamboard.info/common/oscam.git"
         source_branch: "master"
         destination_branch: "master"
         sync_tags: "true"

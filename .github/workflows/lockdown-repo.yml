@@ -20,10 +20,10 @@ jobs:
           close-issue: true
           issue-comment: >
             This repository does not accept bug reports as it is a mirror of oscam gitlab repository.
-            To submit issues, please use https://git.streamboard.tv/common/oscam/-/issues.
+            To submit issues, please use https://git.streamboard.info/common/oscam/-/issues.
           skip-closed-issue-comment: true
           close-pr: true
           pr-comment: >
             This repository does not accept pull requests as it is a mirror of oscam gitlab repository.
-            To submit merge requests, please use https://git.streamboard.tv/common/oscam/-/merge_requests.
+            To submit merge requests, please use https://git.streamboard.info/common/oscam/-/merge_requests.
           skip-closed-pr-comment: true
