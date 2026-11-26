@@ -1426,6 +1426,32 @@ int32_t dvbapi_open_device(int32_t type, int32_t num, int32_t adapter)
 	else
 	{
 		dmx_fd = ret = open(device_path, O_RDWR | O_NONBLOCK);
+
+		// The requested CA device could not be opened: only now try the remaining ones.
+		if(ret < 0 && type != 0)
+		{
+			uint32_t idx;
+			for(idx = ca_offset; idx < ca_descramblers_total + ca_offset; idx++)
+			{
+				if(idx == (uint32_t)(num + ca_offset))
+				{
+					continue; // already tried
+				}
+
+				snprintf(device_path2, sizeof(device_path2), devices[selected_box].ca_device, idx);
+				snprintf(device_path, sizeof(device_path), devices[selected_box].path, adapter);
+				if(!cs_strncat(device_path, device_path2, sizeof(device_path)))
+				{
+					continue;
+				}
+
+				dmx_fd = ret = open(device_path, O_RDWR | O_NONBLOCK);
+				if(ret >= 0)
+				{
+					break;
+				}
+			}
+		}
 	}
 
 	if(ret < 0)
@@ -2588,9 +2614,27 @@ void dvbapi_stop_descrambling(int32_t demux_id, uint32_t msgid)
 	demux[demux_id].curindex = -1;
 	demux[demux_id].srvtype = -1;
 
-	if(!dvbapi_listenport_active && cfg.dvbapi_boxtype != BOXTYPE_PC_NODMX)
+	if(cfg.dvbapi_boxtype != BOXTYPE_PC_NODMX)
 	{
-		unlink(ECMINFO_FILE);
+		bool others_active = false;
+		if(dvbapi_listenport_active)
+		{
+			// Network mode (e.g. PMT mode 6): other programs may still be descrambling
+			// and rewrite the file themselves, so only remove it when none is left.
+			for(i = 0; i < MAX_DEMUX; i++)
+			{
+				if(demux[i].program_number != 0 && demux[i].pidindex >= 0)
+				{
+					others_active = true;
+					break;
+				}
+			}
+		}
+
+		if(!others_active)
+		{
+			unlink(ECMINFO_FILE);
+		}
 	}
 	return;
 }
